@@ -143,6 +143,6 @@ The scanner would have caught this automatically by:
 
 ---
 
-# License
+## License
 MIT
 
