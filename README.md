@@ -4,7 +4,7 @@ Finds GraphQL fields that accept unbounded `Int` arguments (like `limit`, `count
 and measures response time and size degradation — the exact class of vulnerability found on
 `exchange-api.redacted.local` where `price_bars(limit: 999999999)` caused a 700ms → 13,000ms slowdown.
 
-\---
+---
 
 ## How it works
 
@@ -15,7 +15,7 @@ and measures response time and size degradation — the exact class of vulnerabi
 5. **Measures** response time and response size at each level
 6. **Flags** any argument where response time grows by 3x or more vs baseline
 
-\---
+---
 
 ## Installation
 
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 python gqlfuzz.py https://exchange-api.redacted.local/graphql
 
 # Authenticated scan
-python gqlfuzz.py https://api.example.com/graphql -t YOUR\_TOKEN
+python gqlfuzz.py https://api.example.com/graphql -t YOUR_TOKEN
 
 # Custom headers
 python gqlfuzz.py https://api.example.com/graphql -H "X-Api-Key: secret"
@@ -50,7 +50,7 @@ python gqlfuzz.py https://api.example.com/graphql -o report.json
 python gqlfuzz.py https://api.example.com/graphql --timeout 30
 ```
 
-\---
+---
 
 ## Severity Scoring
 
@@ -61,7 +61,7 @@ python gqlfuzz.py https://api.example.com/graphql --timeout 30
 |3x – 7x|MEDIUM|
 |< 3x but large size growth|LOW|
 
-\---
+---
 
 ## Output
 
@@ -80,28 +80,28 @@ Live findings printed as each vulnerable argument is confirmed, with:
 {
   "scanner": "gqlfuzz",
   "target": "https://exchange-api.redacted.local/graphql",
-  "total\_args\_tested": 4,
+  "total_args_tested": 4,
   "summary": {
-    "overall\_risk": "HIGH",
-    "vulnerable\_args": 1,
-    "by\_severity": { "CRITICAL": 0, "HIGH": 1, "MEDIUM": 0, "LOW": 0 }
+    "overall_risk": "HIGH",
+    "vulnerable_args": 1,
+    "by_severity": { "CRITICAL": 0, "HIGH": 1, "MEDIUM": 0, "LOW": 0 }
   },
-  "findings": \[
+  "findings": [
     {
-      "field": "instruments.price\_bars.limit",
+      "field": "instruments.price_bars.limit",
       "severity": "HIGH",
-      "baseline\_time\_ms": 700,
-      "worst\_value": 999999999,
-      "worst\_time\_ms": 13916,
-      "slowdown\_factor": 19.9,
-      "query\_used": "{ instruments { price\_bars(limit: 999999999) { \_\_typename } } }",
+      "baseline_time_ms": 700,
+      "worst_value": 999999999,
+      "worst_time_ms": 13916,
+      "slowdown_factor": 19.9,
+      "query_used": "{ instruments { price_bars(limit: 999999999) { __typename } } }",
       "recommendation": "Enforce a hard server-side cap on `limit` (e.g. max 500)..."
     }
   ]
 }
 ```
 
-\---
+---
 
 ## Exit Codes
 
@@ -111,7 +111,7 @@ Live findings printed as each vulnerable argument is confirmed, with:
 |`1`|HIGH severity found|
 |`2`|CRITICAL severity found|
 
-\---
+---
 
 ## Real-World Example
 
@@ -120,24 +120,24 @@ This tool directly models the redacted local finding:
 ```bash
 curl -X POST https://exchange-api.redacted.local/graphql \\
   -H "Content-Type: application/json" \\
-  --data '{"query":"{ instruments { price\_bars(limit: 999999999) { \_\_typename } } }"}'
+  --data '{"query":"{ instruments { price_bars(limit: 999999999) { __typename } } }"}'
 # Response time: 13,916ms vs baseline 700ms = 19.9x slowdown
 ```
 
 The scanner would have caught this automatically by:
 
-1. Discovering `price\_bars` has a `limit: Int` argument via introspection
+1. Discovering `price_bars` has a `limit: Int` argument via introspection
 2. Recognising `limit` as a limit-like argument name
 3. Fuzzing it up to `999999999` and measuring the 19.9x slowdown
 4. Flagging it as HIGH severity with the reproduction query
 
-\---
+---
 
 ## Roadmap
 
-* \[ ] Response time measurement without introspection (blind mode)
-* \[ ] String argument fuzzing (oversized strings, repeated chars)
-* \[ ] Offset/pagination abuse (offset: 999999999 with limit: 1)
-* \[ ] Concurrent request amplification testing
-* \[ ] HTML report output
+* [ ] Response time measurement without introspection (blind mode)
+* [ ] String argument fuzzing (oversized strings, repeated chars)
+* [ ] Offset/pagination abuse (offset: 999999999 with limit: 1)
+* [ ] Concurrent request amplification testing
+* [ ] HTML report output
 
