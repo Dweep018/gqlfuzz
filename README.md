@@ -1,8 +1,8 @@
 # gqlfuzz — GraphQL Unbounded Argument DoS Scanner
 
 Finds GraphQL fields that accept unbounded `Int` arguments (like `limit`, `count`, `size`)
-and measures response time and size degradation — the exact class of vulnerability found on
-`exchange-api.redacted.local` where `price_bars(limit: 999999999)` caused a 700ms → 13,000ms slowdown.
+and measures response time and size degradation - directly modeling real-world GraphQL
+DoS vulnerabilities where unbounded pagination arguments cause dramatic server slowdowns.
 
 ---
 
@@ -20,7 +20,7 @@ and measures response time and size degradation — the exact class of vulnerabi
 ## Installation
 
 ```bash
-git clone https://github.com/yourname/gqlfuzz
+git clone https://github.com/Dweep018/gqlfuzz
 cd gqlfuzz
 pip install -r requirements.txt
 ```
@@ -29,25 +29,25 @@ pip install -r requirements.txt
 
 ```bash
 # Basic scan
-python gqlfuzz.py https://exchange-api.redacted.local/graphql
+python gqlfuzz.py https://<target>/graphql
 
 # Authenticated scan
-python gqlfuzz.py https://api.example.com/graphql -t YOUR_TOKEN
+python gqlfuzz.py https://<target>/graphql -t YOUR_TOKEN
 
 # Custom headers
-python gqlfuzz.py https://api.example.com/graphql -H "X-Api-Key: secret"
+python gqlfuzz.py https://<target>/graphql -H "X-Api-Key: secret"
 
 # Fuzz ALL Int args (not just limit-like ones)
-python gqlfuzz.py https://api.example.com/graphql --all-ints
+python gqlfuzz.py https://<target>/graphql --all-ints
 
 # Lower the detection threshold (flag at 2x slowdown instead of 3x)
-python gqlfuzz.py https://api.example.com/graphql --threshold 2.0
+python gqlfuzz.py https://<target>/graphql --threshold 2.0
 
 # Save JSON report
-python gqlfuzz.py https://api.example.com/graphql -o report.json
+python gqlfuzz.py https://<target>/graphql -o report.json
 
 # Longer timeout for slow endpoints
-python gqlfuzz.py https://api.example.com/graphql --timeout 30
+python gqlfuzz.py https://<target>/graphql --timeout 30
 ```
 
 ---
@@ -79,7 +79,7 @@ Live findings printed as each vulnerable argument is confirmed, with:
 ```json
 {
   "scanner": "gqlfuzz",
-  "target": "https://exchange-api.redacted.local/graphql",
+  "target": "https://<target>/graphql",
   "total_args_tested": 4,
   "summary": {
     "overall_risk": "HIGH",
@@ -118,7 +118,7 @@ Live findings printed as each vulnerable argument is confirmed, with:
 This tool directly models the redacted local finding:
 
 ```bash
-curl -X POST https://exchange-api.redacted.local/graphql \\
+curl -X POST https://<target>/graphql \\
   -H "Content-Type: application/json" \\
   --data '{"query":"{ instruments { price_bars(limit: 999999999) { __typename } } }"}'
 # Response time: 13,916ms vs baseline 700ms = 19.9x slowdown
