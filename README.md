@@ -2,7 +2,7 @@
 
 Finds GraphQL fields that accept unbounded `Int` arguments (like `limit`, `count`, `size`)
 and measures response time and size degradation — the exact class of vulnerability found on
-`exchange-api.redacted.local` where `price\_bars(limit: 999999999)` caused a 700ms → 13,000ms slowdown.
+`exchange-api.redacted.local` where `price_bars(limit: 999999999)` caused a 700ms → 13,000ms slowdown.
 
 \---
 
