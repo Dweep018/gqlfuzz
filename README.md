@@ -115,7 +115,7 @@ Live findings printed as each vulnerable argument is confirmed, with:
 
 ## Real-World Example
 
-This tool directly models the redacted local finding:
+This tool directly models real-world GraphQL DoS findings:
 
 ```bash
 curl -X POST https://<target>/graphql \\
@@ -140,4 +140,9 @@ The scanner would have caught this automatically by:
 * [ ] Offset/pagination abuse (offset: 999999999 with limit: 1)
 * [ ] Concurrent request amplification testing
 * [ ] HTML report output
+
+---
+
+# License
+MIT
 
