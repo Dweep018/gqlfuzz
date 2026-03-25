@@ -412,7 +412,7 @@ async def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python gqlfuzz.py https://exchange-api.redacted.local/graphql
+  python gqlfuzz.py https://<target>/graphql
   python gqlfuzz.py https://api.example.com/graphql -t mytoken
   python gqlfuzz.py https://api.example.com/graphql -o report.json
   python gqlfuzz.py https://api.example.com/graphql --timeout 30 --threshold 2.0
